@@ -34,7 +34,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
@@ -60,7 +59,7 @@ class Application extends JFrame {
     JPanel panel;
     Font defaultTitleFont = new Font("SF Pro", Font.BOLD, 25);
     Font defaultButtonFont = new Font("SF Pro", Font.BOLD, 18);
-    private ArrayList<Contact> contacts = new ArrayList<Contact>();
+    private ArrayList<Contatto> contacts = new ArrayList<Contatto>();
 
     Application() {
         setTitle("Contact Manager v2.0");
@@ -110,15 +109,24 @@ class Application extends JFrame {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             String[] data = line.split(",");
-                            if (data.length == 3) {
+                            if (data.length == 4) {
                                 String name = data[0];
                                 String surname = data[1];
                                 String phoneNumber = data[2];
+                                String dateString = data[3];
                                 try {
-                                    Contact contact = new Contact(name, surname, phoneNumber);
+                                    Contatto contact = new Contatto(name, surname, phoneNumber,dateString);
+                                    
+                                    boolean valid = true;
+                                    for (Contatto cont:contacts) {
+                                        if(cont.equals(contact))
+                                            valid=false;
+                                        
+                                    }
+                                    if(valid){
                                     contacts.add(contact);
                                     tableModel.addRow(new Object[] { contact.getName(), contact.getSurname(),
-                                            contact.getNumeroDiTelefono() });
+                                            contact.getNumeroDiTelefono(),contact.getDataNascita() });}
                                 } catch (Exception ex) {
                                     // Handle invalid data if necessary
                                     System.out.println("Error importing contact: " + ex.getMessage());
@@ -144,9 +152,9 @@ class Application extends JFrame {
                 // Handle export to CSV logic here
                 try {
                     FileWriter writer = new FileWriter("contacts.csv");
-                    for (Contact contact : contacts) {
+                    for (Contatto contact : contacts) {
                         writer.write(contact.getName() + "," + contact.getSurname() + ","
-                                + contact.getNumeroDiTelefono() + "\n");
+                                + contact.getNumeroDiTelefono() + ","+ contact.getDataNascita() + "\n");
                     }
                     writer.close();
                     JOptionPane.showMessageDialog(Application.this, "Contacts exported to contacts.csv.");
@@ -183,16 +191,19 @@ class Application extends JFrame {
             JTextField nameField = new JTextField();
             JTextField surnameField = new JTextField();
             JTextField phoneNumberField = new JTextField();
+            JTextField dateField = new JTextField();
 
             // Create the input panel with fields
             JPanel inputPanel = new JPanel();
-            inputPanel.setLayout(new GridLayout(3, 2));
+            inputPanel.setLayout(new GridLayout(4, 2));
             inputPanel.add(new JLabel("Name:"));
             inputPanel.add(nameField);
             inputPanel.add(new JLabel("Surname:"));
             inputPanel.add(surnameField);
             inputPanel.add(new JLabel("Phone Number:"));
             inputPanel.add(phoneNumberField);
+            inputPanel.add(new JLabel("Date (yyyy-mm-dd):"));
+            inputPanel.add(dateField);
 
             // Show the input dialog and wait for user input
             int result = JOptionPane.showConfirmDialog(this, inputPanel, "Enter Contact Details",
@@ -203,18 +214,29 @@ class Application extends JFrame {
                 String name = nameField.getText();
                 String surname = surnameField.getText();
                 String phoneNumber = phoneNumberField.getText();
+                String dateString = dateField.getText();
+                
 
                 try {
                     // Validate input and create a new Contact object
-                    Contact contact = new Contact(name, surname, phoneNumber);
+                    Contatto contact = new Contatto(name, surname, phoneNumber,dateString);
 
                     // Add the contact to the ArrayList
+                    boolean valid = true;
+                    for (Contatto cont:contacts) {
+                        if(cont.equals(contact))
+                            valid=false;
+                        
+                    }
+                    if(valid){
                     contacts.add(contact);
 
                     // Update the table model and refresh the table
                     tableModel.addRow(
-                            new Object[] { contact.getName(), contact.getSurname(), contact.getNumeroDiTelefono() });
+                            new Object[] { contact.getName(), contact.getSurname(), contact.getNumeroDiTelefono() , contact.getDataNascita()});
+                            }
                 } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                     // Handle validation exceptions
                     JOptionPane.showMessageDialog(this, "Invalid input. Please enter valid contact details.", "Error",
                             JOptionPane.ERROR_MESSAGE);
@@ -270,16 +292,19 @@ class Application extends JFrame {
             JTextField nameField = new JTextField();
             JTextField surnameField = new JTextField();
             JTextField phoneNumberField = new JTextField();
+            JTextField dateField = new JTextField();
 
             // Create the input panel with fields
             JPanel inputPanel = new JPanel();
-            inputPanel.setLayout(new GridLayout(3, 2));
+            inputPanel.setLayout(new GridLayout(4, 2));
             inputPanel.add(new JLabel("Name:"));
             inputPanel.add(nameField);
             inputPanel.add(new JLabel("Surname:"));
             inputPanel.add(surnameField);
             inputPanel.add(new JLabel("Phone Number:"));
             inputPanel.add(phoneNumberField);
+            inputPanel.add(new JLabel("Date (yyyy-mm-dd):"));
+            inputPanel.add(dateField);
 
             // Show the input dialog and wait for user input
             int result = JOptionPane.showConfirmDialog(this, inputPanel, "Enter Contact Details",
@@ -290,15 +315,25 @@ class Application extends JFrame {
                 String name = nameField.getText();
                 String surname = surnameField.getText();
                 String phoneNumber = phoneNumberField.getText();
+                String dateString = dateField.getText();
                 try {
                     // Validate input and create a new Contact object
-                    Contact contact = new Contact(name, surname, phoneNumber);
+                    Contatto contact = new Contatto(name, surname, phoneNumber,dateString);
                     // Add the contact to the ArrayList
+                    boolean valid = true;
+                    for (Contatto cont:contacts) {
+                        if(cont.equals(contact))
+                            valid=false;
+                        
+                    }
+                    if(valid){
                     contacts.add(contact);
                     // Update the table model and refresh the table
                     tableModel.addRow(
-                            new Object[] { contact.getName(), contact.getSurname(), contact.getNumeroDiTelefono() });
+                            new Object[] { contact.getName(), contact.getSurname(), contact.getNumeroDiTelefono(),contact.getDataNascita() });
+                            }
                 } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                     // Handle validation exceptions
                     JOptionPane.showMessageDialog(this, "Invalid input. Please enter valid contact details.", "Error",
                             JOptionPane.ERROR_MESSAGE);
@@ -376,13 +411,13 @@ class Application extends JFrame {
                 tableModel.setRowCount(0);
 
                 // Filter and add contacts that match the search query
-                for (Contact contact : contacts) {
+                for (Contatto contact : contacts) {
                     String name = contact.getName().toLowerCase();
                     String surname = contact.getSurname().toLowerCase();
 
                     if (name.contains(searchQuery) || surname.contains(searchQuery)) {
                         tableModel.addRow(new Object[] { contact.getName(), contact.getSurname(),
-                                contact.getNumeroDiTelefono() });
+                                contact.getNumeroDiTelefono(),contact.getDataNascita() });
                     }
                 }
             }
@@ -394,7 +429,7 @@ class Application extends JFrame {
     }
 
     private void initializeTable() {
-        String[] columnNames = { "Name", "Surname", "Phone Number" };
+        String[] columnNames = { "Name", "Surname", "Phone Number", "Date of birth" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -421,7 +456,10 @@ class Application extends JFrame {
                         contacts.get(row).setSurname(updatedValue.toString());
                     } else if (column == 2) {
                         contacts.get(row).setNumeroDiTelefono(updatedValue.toString());
+                    } else if (column == 3) {
+                        contacts.get(row).setDataNascita(updatedValue.toString());
                     }
+                    
                 } catch (Exception ex) {
                     // Handle validation exceptions
                     JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error",
