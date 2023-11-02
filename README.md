@@ -40,3 +40,7 @@ Supports all operations:
 Pintescul Patric
 
 - Email: <patric.personal99@gmail.com>
+
+## Extra
+
+Made with VSCode `v1.84` and JDK `21+35-LTS-2513 64-Bit VM`
