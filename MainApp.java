@@ -23,7 +23,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
-import java.awt.RenderingHints.Key;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -85,6 +84,9 @@ class Application extends JFrame {
         panel.add(title);
     }
 
+    /**
+     * Creates and configures the menu bar for the application, including file operations and contact management.
+     */
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
@@ -93,14 +95,16 @@ class Application extends JFrame {
         JMenuItem importMenuItem = new JMenuItem("Import CSV");
         JMenuItem exportMenuItem = new JMenuItem("Export CSV");
         JMenuItem exitMenuItem = new JMenuItem("Exit");
+
+        // Set keyboard shortcuts for menu items
         importMenuItem
                 .setAccelerator(KeyStroke.getKeyStroke('I', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         exportMenuItem
                 .setAccelerator(KeyStroke.getKeyStroke('E', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
 
-        importMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+
+        // ActionListener for Import CSV menu item
+        importMenuItem.addActionListener(e->{
                 // Handle import logic here
                 JFileChooser fileChooser = new JFileChooser();
                 int result = fileChooser.showOpenDialog(Application.this);
@@ -123,10 +127,13 @@ class Application extends JFrame {
                                             valid=false;
                                         
                                     }
+                                    if(! valid){
+                                        JOptionPane.showMessageDialog(Application.this, "Contact is already in list, edit or delete it", "Contact already present", JOptionPane.INFORMATION_MESSAGE);
+                                    }
                                     if(valid){
                                     contacts.add(contact);
                                     tableModel.addRow(new Object[] { contact.getName(), contact.getSurname(),
-                                            contact.getNumeroDiTelefono(),contact.getDataNascita() });}
+                                            contact.getPhoneNumber(),contact.getBirthDate() });}
                                 } catch (Exception ex) {
                                     // Handle invalid data if necessary
                                     System.out.println("Error importing contact: " + ex.getMessage());
@@ -143,18 +150,16 @@ class Application extends JFrame {
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-            }
         });
 
-        exportMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        // ActionListener for Export CSV menu item
+        exportMenuItem.addActionListener(e->{
                 // Handle export to CSV logic here
                 try {
                     FileWriter writer = new FileWriter("contacts.csv");
                     for (Contatto contact : contacts) {
                         writer.write(contact.getName() + "," + contact.getSurname() + ","
-                                + contact.getNumeroDiTelefono() + ","+ contact.getDataNascita() + "\n");
+                                + contact.getPhoneNumber() + ","+ contact.getBirthDate() + "\n");
                     }
                     writer.close();
                     JOptionPane.showMessageDialog(Application.this, "Contacts exported to contacts.csv.");
@@ -162,16 +167,12 @@ class Application extends JFrame {
                     JOptionPane.showMessageDialog(Application.this, "Error exporting contacts: " + ex.getMessage(),
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-        });
+            });
 
-        exitMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        // ActionListener for Exit menu item
+        exitMenuItem.addActionListener(e -> System.exit(0));
 
+        // Add items to File menu
         fileMenu.add(importMenuItem);
         fileMenu.add(exportMenuItem);
         fileMenu.addSeparator();
@@ -181,11 +182,14 @@ class Application extends JFrame {
         JMenu editMenu = new JMenu("Edit");
         JMenuItem addMenuItem = new JMenuItem("Add");
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
-        addMenuItem.setAccelerator(
-                KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
-        deleteMenuItem.setAccelerator(
-                KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
 
+        // Set keyboard shortcuts for menu items
+        addMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        deleteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+
+        // ActionListener for Add menu item
         addMenuItem.addActionListener(e -> {
             // Create custom input fields for name, surname, and phone number
             JTextField nameField = new JTextField();
@@ -228,12 +232,15 @@ class Application extends JFrame {
                             valid=false;
                         
                     }
+                    if(! valid){
+                        JOptionPane.showMessageDialog(Application.this, "Contact is already in list, edit or delete it", "Contact already present", JOptionPane.INFORMATION_MESSAGE);
+                    }
                     if(valid){
                     contacts.add(contact);
 
                     // Update the table model and refresh the table
                     tableModel.addRow(
-                            new Object[] { contact.getName(), contact.getSurname(), contact.getNumeroDiTelefono() , contact.getDataNascita()});
+                            new Object[] { contact.getName(), contact.getSurname(), contact.getPhoneNumber() , contact.getBirthDate()});
                             }
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
@@ -244,9 +251,8 @@ class Application extends JFrame {
             }
         });
 
-        deleteMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        // ActionListener for Delete menu item
+        deleteMenuItem.addActionListener(e->{
                 // Handle delete logic here
                 try {
                     int selectedRow = contactTable.getSelectedRow();
@@ -259,9 +265,9 @@ class Application extends JFrame {
                     }
                 } catch (HeadlessException e1) {
                 }
-            }
         });
 
+        // Add items to Edit menu
         editMenu.add(addMenuItem);
         editMenu.add(deleteMenuItem);
 
@@ -269,6 +275,7 @@ class Application extends JFrame {
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
 
+        // Set the menu bar for the application window
         setJMenuBar(menuBar);
     }
 
@@ -326,11 +333,14 @@ class Application extends JFrame {
                             valid=false;
                         
                     }
+                    if(! valid){
+                        JOptionPane.showMessageDialog(Application.this, "Contact is already in list, edit or delete it", "Contact already present", JOptionPane.INFORMATION_MESSAGE);
+                    }
                     if(valid){
                     contacts.add(contact);
                     // Update the table model and refresh the table
                     tableModel.addRow(
-                            new Object[] { contact.getName(), contact.getSurname(), contact.getNumeroDiTelefono(),contact.getDataNascita() });
+                            new Object[] { contact.getName(), contact.getSurname(), contact.getPhoneNumber(),contact.getBirthDate() });
                             }
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
@@ -417,7 +427,7 @@ class Application extends JFrame {
 
                     if (name.contains(searchQuery) || surname.contains(searchQuery)) {
                         tableModel.addRow(new Object[] { contact.getName(), contact.getSurname(),
-                                contact.getNumeroDiTelefono(),contact.getDataNascita() });
+                                contact.getPhoneNumber(),contact.getBirthDate() });
                     }
                 }
             }
@@ -455,7 +465,7 @@ class Application extends JFrame {
                     } else if (column == 1) {
                         contacts.get(row).setSurname(updatedValue.toString());
                     } else if (column == 2) {
-                        contacts.get(row).setNumeroDiTelefono(updatedValue.toString());
+                        contacts.get(row).setPhoneNumber(updatedValue.toString());
                     } else if (column == 3) {
                         contacts.get(row).setDataNascita(updatedValue.toString());
                     }
