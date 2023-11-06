@@ -446,6 +446,7 @@ class Application extends JFrame {
         };
 
         contactTable = new JTable(tableModel);
+        contactTable.setFont(defaultButtonFont);
         contactTable.setFillsViewportHeight(true);
 
         // Add a TableModelListener to handle changes in the table model
